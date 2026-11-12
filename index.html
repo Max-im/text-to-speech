@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Озвучка текста</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f6e6b'/%3E%3Cpath d='M8 18h3l4 5V9l-4 5H8zM20 12a5 5 0 0 1 0 8' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="head">
+        <h1>Озвучка текста</h1>
+        <p class="lede">Английский текст читает модель Kokoro-82M прямо в браузере. Ничего устанавливать не нужно.</p>
+      </header>
+
+      <section id="boot" class="boot" aria-live="polite">
+        <p id="boot-text">Модель скачивается один раз</p>
+        <div id="boot-bar" class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Загрузка модели">
+          <div id="boot-fill"></div>
+        </div>
+        <p id="boot-percent">0%</p>
+      </section>
+
+      <p id="notice" class="notice" hidden></p>
+      <p id="error" class="error" role="alert" hidden></p>
+
+      <div class="field">
+        <label for="text">Текст</label>
+        <textarea id="text" rows="8" placeholder="Вставьте английский текст. Например: Life is like a box of chocolates. You never know what you're gonna get."></textarea>
+      </div>
+
+      <div class="controls">
+        <div class="field">
+          <label for="voice">Голос</label>
+          <select id="voice">
+            <optgroup label="Американский английский — женские">
+              <option value="af_heart" selected>Heart</option>
+              <option value="af_bella">Bella</option>
+              <option value="af_nicole">Nicole</option>
+              <option value="af_sarah">Sarah</option>
+              <option value="af_alloy">Alloy</option>
+              <option value="af_aoede">Aoede</option>
+              <option value="af_kore">Kore</option>
+              <option value="af_nova">Nova</option>
+              <option value="af_sky">Sky</option>
+              <option value="af_jessica">Jessica</option>
+              <option value="af_river">River</option>
+            </optgroup>
+            <optgroup label="Американский английский — мужские">
+              <option value="am_michael">Michael</option>
+              <option value="am_fenrir">Fenrir</option>
+              <option value="am_puck">Puck</option>
+              <option value="am_echo">Echo</option>
+              <option value="am_eric">Eric</option>
+              <option value="am_liam">Liam</option>
+              <option value="am_onyx">Onyx</option>
+              <option value="am_adam">Adam</option>
+              <option value="am_santa">Santa</option>
+            </optgroup>
+            <optgroup label="Британский английский — женские">
+              <option value="bf_emma">Emma</option>
+              <option value="bf_isabella">Isabella</option>
+              <option value="bf_alice">Alice</option>
+              <option value="bf_lily">Lily</option>
+            </optgroup>
+            <optgroup label="Британский английский — мужские">
+              <option value="bm_george">George</option>
+              <option value="bm_fable">Fable</option>
+              <option value="bm_lewis">Lewis</option>
+              <option value="bm_daniel">Daniel</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <div class="field">
+          <div class="label-row">
+            <label for="speed">Скорость</label>
+            <span id="speed-value">1.0×</span>
+          </div>
+          <input id="speed" type="range" min="0.5" max="2" step="0.1" value="1" />
+        </div>
+
+        <div class="field">
+          <div class="label-row">
+            <label for="volume">Громкость</label>
+            <span id="volume-value">100%</span>
+          </div>
+          <input id="volume" type="range" min="0" max="100" step="1" value="100" />
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="speak" type="button" disabled>Озвучить</button>
+        <button id="cancel" type="button" hidden>Отмена</button>
+      </div>
+
+      <div id="job" class="job" hidden>
+        <div id="job-bar" class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Прогресс озвучки">
+          <div id="job-fill"></div>
+        </div>
+        <p id="job-label">Фрагмент 0 из 0</p>
+      </div>
+
+      <section class="player" aria-label="Плеер">
+        <button id="play" type="button" disabled>Слушать</button>
+        <span id="time-current">0:00</span>
+        <input id="seek" type="range" min="0" max="1000" step="1" value="0" disabled aria-label="Позиция" />
+        <span id="time-total">0:00</span>
+      </section>
+
+      <button id="save" class="save" type="button" disabled>Сохранить</button>
+      <p id="status" class="status" aria-live="polite"></p>
+    </main>
+    <script>
+      // Shows a clear hint if the app script never starts (e.g. the file was opened from disk).
+      window.__ttsStarted = false;
+      setTimeout(function () {
+        if (window.__ttsStarted) return;
+        var box = document.getElementById("error");
+        if (!box) return;
+        box.hidden = false;
+        box.textContent =
+          "Страница не запустилась. Откройте её через сервер (npm run dev и адрес http://localhost:5173/ " +
+          "или опубликованный сайт), а не файлом index.html напрямую.";
+      }, 6000);
+    </script>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
